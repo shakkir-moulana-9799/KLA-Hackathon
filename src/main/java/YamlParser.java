@@ -17,19 +17,30 @@ public class YamlParser {
         System.out.print(dtf.format(now));
     }
 
-    public static void getActivities(Map<String, Object> data) {
-        for (Map.Entry<String, Object> entry : data.entrySet()) {
-            printTimeNow();
-            System.out.print(entry.getKey() + "\n");
-            LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>)entry.getValue();
+    public static void getActivities(LinkedHashMap<String, Object> data, String val, String subval) {
+        for (String keys : data.keySet()) {
+            if(val.length() != 0) {
+                LinkedHashMap<String, Object> subActivity = (LinkedHashMap<String, Object>) data.get(keys);
+                LinkedHashMap<String, String> function = (LinkedHashMap<String, String>) subActivity.get("Inputs");
+                val = val + "." + keys;
+                printTimeNow();
+                System.out.print(val + " Entry\n");
+                if(function != null) {
+                    subval = " Executing " + subActivity.get("Function") + " (" + function.get("FunctionInput") + ", " + function.get("ExecutionTime") + ")";
+                    printTimeNow();
+                    System.out.print(val + subval + "\n");
+                }
+            }
+            else {
+                val = keys;
+                printTimeNow();
+                System.out.print(val + " Entry\n");
+            }
+            LinkedHashMap<String, Object> linkedHashMap = (LinkedHashMap<String, Object>)data.get(keys);
             if(linkedHashMap.get("Type").equals("Flow")) {
                 if(linkedHashMap.get("Execution").equals("Sequential")) {
                     LinkedHashMap<String, Object> activityList = (LinkedHashMap<String, Object>) linkedHashMap.get("Activities");
-                    System.out.println(activityList);
-                    for (String key : activityList.keySet()) {
-                        printTimeNow();
-                        System.out.println(entry.getKey() + "." + key + " Executing " + linkedHashMap.get(key));
-                    }
+                    getActivities(activityList, val, subval);
                 }
                 else {
 
@@ -37,15 +48,17 @@ public class YamlParser {
             }
             else {
             }
+            printTimeNow();
+            System.out.print(val + " Exit\n");
         }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        String path = "C:\\Files\\Projects\\KLA-Hackathon\\DataSet\\tempdata.yaml";
+        String path = "C:\\Files\\Projects\\KLA-Hackathon\\DataSet\\Milestone1\\Milestone1A.yaml";
 
         InputStream inputStream = new FileInputStream(path);
         Yaml yaml = new Yaml();
-        Map<String, Object> data = yaml.load(inputStream);
-        getActivities(data);
+        LinkedHashMap<String, Object> data = yaml.load(inputStream);
+        getActivities(data, "", "");
     }
 }
