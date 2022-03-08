@@ -21,10 +21,10 @@ public class Activities {
         Thread.sleep(t*1000);
     }
 
-    public synchronized void printTimeNow() throws InterruptedException {
+    public void printTimeNow(String str) throws InterruptedException {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.000000;");
         LocalDateTime now = LocalDateTime.now();
-        System.out.print(dtf.format(now));
+        System.out.print(dtf.format(now) + str);
     }
     public void getActivities(LinkedHashMap<String, Object> data, String val, String subval, String concurrency) throws InterruptedException {
         for (String keys : data.keySet()) {
@@ -35,13 +35,13 @@ public class Activities {
                     val = val + "." + keys;
                 else
                     val = keys;
-                printTimeNow();
-                System.out.print(val + " Entry\n");
+                String str = val + " Entry\n";
+                printTimeNow(str);
                 if(subActivity.get("Execution").equals("Sequential")) {
                     LinkedHashMap<String, Object> activityList = (LinkedHashMap<String, Object>) subActivity.get("Activities");
                     getActivities(activityList, val, subval, (String) subActivity.get("Execution"));
-                    printTimeNow();
-                    System.out.print(val + " Exit\n");
+                    str = val + " Exit\n";
+                    printTimeNow(str);
                 }
                 else {
                     LinkedHashMap<String, Object> activityList = (LinkedHashMap<String, Object>) subActivity.get("Activities");
@@ -52,14 +52,14 @@ public class Activities {
             }
             else {
                 LinkedHashMap<String, String> function = (LinkedHashMap<String, String>) subActivity.get("Inputs");
-                printTimeNow();
-                System.out.print(val + "." + keys + " Entry\n");
+                String str = val + "." + keys + " Entry\n";
+                printTimeNow(str);
                 subval = " Executing " + subActivity.get("Function") + " (" + function.get("FunctionInput") + ", " + function.get("ExecutionTime") + ")";
-                printTimeNow();
-                System.out.print(val + "." + keys + subval + "\n");
+                str = val + "." + keys + subval + "\n";
+                printTimeNow(str);
                 delay(Integer.parseInt(function.get("ExecutionTime")), concurrency);
-                printTimeNow();
-                System.out.print(val + "." + keys + " Exit\n");
+                str = val + "." + keys + " Exit\n";
+                printTimeNow(str);
             }
         }
     }
