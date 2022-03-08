@@ -2,7 +2,7 @@ M1SampleWorkFlow :
   Type : Flow 
   Execution : Sequential
   Activities :
-    M1SampleTask1 : 
+    M1SampleTask1 :
       Type : Task
       Function : "TimeFunction"
       Inputs : { FunctionInput : "Task1_Input", ExecutionTime : "1" }
